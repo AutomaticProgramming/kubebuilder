@@ -1,0 +1,14 @@
+apiVersion: apps.example.com/v1alpha1
+kind: VibeApp
+metadata:
+  labels:
+    app.kubernetes.io/name: vibeapp
+    app.kubernetes.io/managed-by: kustomize
+  name: vibeapp-sample
+  namespace: kubebuilder-system
+spec:
+  image: nginx:latest
+  replicas: 2
+  healthCheckPath: /healthz
+  storagePath: /data
+  port: 80

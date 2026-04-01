@@ -1,0 +1,266 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: kubebuilder
+  name: kubebuilder-controller-manager
+  namespace: kubebuilder-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: kubebuilder
+  name: kubebuilder-leader-election-role
+  namespace: kubebuilder-system
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubebuilder-manager-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - services/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - apps.example.com
+    resources:
+      - vibeapps
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps.example.com
+    resources:
+      - vibeapps/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - apps.example.com
+    resources:
+      - vibeapps/status
+    verbs:
+      - get
+      - patch
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubebuilder-metrics-auth-role
+rules:
+  - apiGroups:
+      - authentication.k8s.io
+    resources:
+      - tokenreviews
+    verbs:
+      - create
+  - apiGroups:
+      - authorization.k8s.io
+    resources:
+      - subjectaccessreviews
+    verbs:
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubebuilder-metrics-reader
+rules:
+  - nonResourceURLs:
+      - /metrics
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: kubebuilder
+  name: kubebuilder-vibeapp-admin-role
+rules:
+  - apiGroups:
+      - apps.example.com.example.com
+    resources:
+      - vibeapps
+    verbs:
+      - "*"
+  - apiGroups:
+      - apps.example.com.example.com
+    resources:
+      - vibeapps/status
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: kubebuilder
+  name: kubebuilder-vibeapp-editor-role
+rules:
+  - apiGroups:
+      - apps.example.com.example.com
+    resources:
+      - vibeapps
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps.example.com.example.com
+    resources:
+      - vibeapps/status
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: kubebuilder
+  name: kubebuilder-vibeapp-viewer-role
+rules:
+  - apiGroups:
+      - apps.example.com.example.com
+    resources:
+      - vibeapps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps.example.com.example.com
+    resources:
+      - vibeapps/status
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: kubebuilder
+  name: kubebuilder-leader-election-rolebinding
+  namespace: kubebuilder-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kubebuilder-leader-election-role
+subjects:
+  - kind: ServiceAccount
+    name: kubebuilder-controller-manager
+    namespace: kubebuilder-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: kubebuilder
+  name: kubebuilder-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubebuilder-manager-role
+subjects:
+  - kind: ServiceAccount
+    name: kubebuilder-controller-manager
+    namespace: kubebuilder-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubebuilder-metrics-auth-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubebuilder-metrics-auth-role
+subjects:
+  - kind: ServiceAccount
+    name: kubebuilder-controller-manager
+    namespace: kubebuilder-system
