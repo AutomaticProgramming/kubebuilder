@@ -90,6 +90,8 @@ make docker-build IMG=$IMG
 make docker-push IMG=$IMG
 ```
 
+生成的资源文件均在YAML文件下，operator已上传dockerhub可直接下载
+
 ### 3. 安装 CRD 到集群
 
 ```bash
@@ -295,6 +297,8 @@ make generate
 # 生成 CRD 和 Webhook manifests
 make manifests
 ```
+
+
 
 ### 更新 CRD 示例文件
 
